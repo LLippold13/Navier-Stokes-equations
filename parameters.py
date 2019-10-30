@@ -18,7 +18,8 @@ tau = 0.5
 # pressure
 itermax = 10
 it = 0
-res = 1e10+0.0
+r = 1e10+0.0
+res=np.zeros((imax, jmax))
 eps = 1.0
 omg = 1.7
 gamma = 1.0
