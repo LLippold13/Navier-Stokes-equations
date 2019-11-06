@@ -4,8 +4,8 @@ import numpy as np
 # geometry
 xlength = 1.0
 ylength = 1.0
-imax = 10 	# x -> j
-jmax = 10 	# y -> i
+imax = 500 	# x -> j
+jmax = 500 	# y -> i
 delx = xlength / imax
 dely = ylength / jmax
 
@@ -22,7 +22,7 @@ r = 1e10+0.0
 res=np.zeros((imax, jmax))
 eps = 1.0
 omg = 1.7
-gamma = 1.0
+gamma = .5
 
 # physics
 Re = 1.0
