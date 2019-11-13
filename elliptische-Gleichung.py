@@ -2,6 +2,8 @@ from parameters import *
 
 import numpy as np
 import matplotlib.pyplot as plt
+from numpy import linalg as LA
+
 ###
 
 #Ableitungsfunktionen
@@ -63,7 +65,10 @@ def dy(P, dely):
 			dy = (P[i,j+1] - P[i,j])/dely
 	return dy
 
-  
+for i in range(imax+2):
+	for j in range(jmax+2):
+		P[i,j] = 2 - (delx*i*delx*i + dely*j*dely*j)
+		# P[i,j]=np.sin(i*delx)*np.cos(j*dely)
 
 while t < t_end and N<N_max:
 
@@ -112,9 +117,7 @@ while t < t_end and N<N_max:
 
 
 	RHS=np.zeros((imax+2, jmax+2))
-	for i in np.arange(1,imax+1):
-		for j in np.arange(1,jmax+1):
-			RHS[i,j]=1/delt*(1/delx*(F[i,j]-F[i-1,j])+1/dely*(G[i,j-G[i,j-1]]))
+	RHS = - 2 * P
 
 	#Druckberechnung
 	it=0
@@ -137,7 +140,6 @@ while t < t_end and N<N_max:
 		it +=1
 
 
-
 	dxP = dx(P,delx)
 	dyP = dy(P,dely)
 	U = F - delt * dxP
@@ -148,11 +150,7 @@ while t < t_end and N<N_max:
 	print([t,N])
 #Ende der Zeititeration
 
-fig, ax = plt.subplots()
-im = ax.imshow(P)
-fig.colorbar(im)
-plt.legend()
-plt.show()
+
 
 
 
