@@ -4,11 +4,10 @@ import numpy as np
 # geometry
 xlength = 1.0
 ylength = 1.0
-imax = 100 	# x -> j
-jmax = 100 	# y -> i
-delx = xlength / imax
-dely = ylength / jmax
-
+imax = 80 	# x -> j
+jmax = 80 	# y -> i
+delx = xlength / (imax+1)
+dely = ylength / (jmax+1)
 # time iteration
 t = 0.0
 t_end = 1.0
@@ -18,11 +17,11 @@ N=0
 N_max=1
 
 # pressure
-itermax = 100
+itermax = 1000
 it = 0
 res=np.ones((imax, jmax))*5e8
-eps = 1.0
-omg = 1.7
+eps = 0.5
+omg = 1.7 # 0 <= omg <= 2
 gamma = 1
 
 # physics
