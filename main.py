@@ -3,10 +3,11 @@ from derivatives import *
 
 import numpy as np
 import matplotlib.pyplot as plt
+from numpy import linalg as LA
 ###
 
 
-  
+RHS=np.ones((imax+2, jmax+2))
 
 while t < t_end and N<N_max:
 
@@ -15,9 +16,10 @@ while t < t_end and N<N_max:
 
 	if umax==0 and vmax==0:
 		delt = tau * Re/(2* (1/delx/delx + 1/dely/dely))
+		gamma=1
 	else:
 		delt = tau * min(Re/(2* (1/delx/delx + 1/dely/dely)), delx/umax, dely/vmax)
-
+		gamma = max(umax*delt/delx,vmax*delt/dely)
 	# Haftbedingungen
 	if(wW==1):
 		U[0, 1:jmax+1] = 0
@@ -54,32 +56,40 @@ while t < t_end and N<N_max:
 	#RHS Druckgleichung
 
 
-	RHS=np.zeros((imax+2, jmax+2))
-	for i in np.arange(1,imax+1):
-		for j in np.arange(1,jmax+1):
-			RHS[i,j]=1/delt*(1/delx*(F[i,j]-F[i-1,j])+1/dely*(G[i,j-G[i,j-1]]))
+	
+	# for i in np.arange(1,imax+1):
+	# 	for j in np.arange(1,jmax+1):
+	# 		RHS[i,j]=1/delt*(1/delx*(F[i,j]-F[i-1,j])+1/dely*(G[i,j-G[i,j-1]]))
+	RHS *= 0
+	RHS += 4
 
 	#Druckberechnung
 	it=0
-	P0 = np.amax(P)
-	while it<=itermax and np.amax(np.abs(res)) >= eps*P0:
-	# while it<=itermax and LA.norm(res,2) >= eps*P0:
-		for i in np.arange(1,imax+1):
-			for j in np.arange(1,jmax+1):
-				P[i,j] = (1-omg)*P[i,j]+omg/(2*(1/delx/delx+1/dely/dely))*((P[i+1,j]+P[i-1,j])/delx/delx+(P[i,j+1]+P[i,j-1])/dely/dely-RHS[i,j])
-				# print(res[i,j])
-				P[0,j]=P[1,j]
-				P[i,0]=P[i,1]
-				P[imax+1,j]=P[imax,j]
-				P[i,jmax+1]=P[i,jmax]
-				res[i-1,j-1] = (P[i+1,j]-2*P[i,j]+P[i-1,j])/delx/delx+(P[i,j+1]-2*P[i,j]+P[i,j-1])/dely/dely-RHS[i,j]
-		# print('res = '+str(np.amax(np.abs(res))))
-		print('res = '+str(LA.norm(res,2)))
-		RHS = - 2 * P
-		print(it)
+	P*=0
+	P+=5
+	Pnorm = LA.norm(P,2)/(imax*jmax)
+	while it<=itermax and LA.norm(res,2)/(imax*jmax) >= eps*Pnorm:
+		for i in np.arange(0,imax+2):
+			for j in np.arange(0,jmax+2):
+				P[i,jmax+1]=i*delx*i*delx + ylength*ylength
+				P[i,0]=i*delx*i*delx
+				P[0,j]=j*dely*j*dely
+				P[imax+1,j]= (imax+1)*delx*(imax+1)*delx + j*dely*j*dely
+				if i>0 and i<imax+1 and j>0 and j<jmax+1:
+					P[i,j] = (1-omg)*P[i,j]+omg/(2*(1/delx/delx+1/dely/dely))*((P[i+1,j]+P[i-1,j])/delx/delx+(P[i,j+1]+P[i,j-1])/dely/dely-RHS[i,j])
+				# P[0,j]=P[1,j]
+				# P[i,0]=P[i,1]
+				# P[imax+1,j]=P[imax,j]
+				# P[i,jmax+1]=P[i,jmax]
+
+				if i>0 and i<imax+1 and j>0 and j<jmax+1:
+					res[i-1,j-1] = (P[i+1,j]-2*P[i,j]+P[i-1,j])/delx/delx+(P[i,j+1]-2*P[i,j]+P[i,j-1])/dely/dely-RHS[i,j]
+				# RHS = -2*P
+		print(LA.norm(res,2)/(imax*jmax) /(eps*Pnorm))
 		it +=1
 
-
+	print('it = '+str(it))
+	print('res = '+str(LA.norm(res,2)/(imax*jmax) /(eps*Pnorm)))
 
 	dxP = dx(P,delx)
 	dyP = dy(P,dely)
@@ -90,7 +100,7 @@ while t < t_end and N<N_max:
 	N+=1
 	print([t,N])
 #Ende der Zeititeration
-
+print(P)
 fig, ax = plt.subplots()
 im = ax.imshow(P)
 fig.colorbar(im)

@@ -20,7 +20,7 @@ N_max=1
 itermax = 1000
 it = 0
 res=np.ones((imax, jmax))*5e8
-eps = 0.5
+eps = 1
 omg = 1.7 # 0 <= omg <= 2
 gamma = 1
 
