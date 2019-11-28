@@ -20,15 +20,15 @@ N_max=3
 itermax = 100
 it = 0
 res=np.ones((imax, jmax))*5e8
-eps = 0.01
+eps = 0.1
 omg = 1.7 # 0 <= omg <= 2
 gamma = 1
 
 # physics
 Re = 10.0
-GX = 0.0; GY = -0.0
+GX = 0.0; GY = 10.0
 U = np.zeros((imax+2, jmax+2)); V = np.zeros((imax+2, jmax+2)); P = np.ones((imax+2, jmax+2))
 wW = 1; wO = 1; wN = 1; wS = 1
-U_x = 1
+U_x = 0
 F = np.zeros((imax+2, jmax+2))
 G = np.zeros((imax+2, jmax+2))

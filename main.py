@@ -15,7 +15,8 @@ while t < t_end and N<N_max:
 	umax = np.amax(np.abs(U))
 	vmax = np.amax(np.abs(V))
 
-	if umax==0 and vmax==0:
+	# print('[umax, vmax] = '+str([umax,vmax]))
+	if umax==0 or vmax==0:
 		delt = tau * Re/(2* (1/delx/delx + 1/dely/dely))
 		gamma=1
 	else:
@@ -68,11 +69,12 @@ while t < t_end and N<N_max:
 	#Druckberechnung
 	it=0
 	Pnorm = LA.norm(P,2)/(imax*jmax)
-	while it<=itermax and LA.norm(res,2)/(imax*jmax) >= eps*Pnorm:
+	# print('Pnorm = '+str(Pnorm))
+	while it<itermax and LA.norm(res,2)/(imax*jmax) > eps*Pnorm:
 		for i in np.arange(0,imax+2):
 			for j in np.arange(0,jmax+2):
 				if i>0 and i<imax+1 and j>0 and j<jmax+1:
-					P[i,j] = (1-omg)*P[i,j]+omg/(2*(1/delx/delx+1/dely/dely))*((P[i+1,j]+P[i-1,j])/delx/delx+(P[i,j+1]+P[i,j-1])/dely/dely-RHS[i,j])
+					P[i,j] = (1.-omg)*P[i,j]+omg/(2*(1/delx/delx+1/dely/dely))*((P[i+1,j]+P[i-1,j])/delx/delx+(P[i,j+1]+P[i,j-1])/dely/dely-RHS[i,j])
 				P[0,j]=P[1,j]
 				P[i,0]=P[i,1]
 				P[imax+1,j]=P[imax,j]
@@ -81,10 +83,11 @@ while t < t_end and N<N_max:
 				if i>0 and i<imax+1 and j>0 and j<jmax+1:
 					res[i-1,j-1] = (P[i+1,j]-2*P[i,j]+P[i-1,j])/delx/delx+(P[i,j+1]-2*P[i,j]+P[i,j-1])/dely/dely-RHS[i,j]
 		# print(LA.norm(res,2)/(imax*jmax) /(eps*Pnorm))
+		print(it)
 		it +=1
 
 	print('it = '+str(it))
-	print('res = '+str(LA.norm(res,2)/(imax*jmax) /(eps*Pnorm)))
+	print('[res, eps*Pnorm] = '+str([LA.norm(res,2)/(imax*jmax),(eps*Pnorm)]))
 
 	dxP = dx(P,delx)
 	dyP = dy(P,dely)
